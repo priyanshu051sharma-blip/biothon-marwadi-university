@@ -1,0 +1,220 @@
+.smart-care-navigator {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.doctor-card {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  transition: transform 0.2s;
+}
+
+.doctor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.doctor-photo {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px solid var(--medical-blue);
+}
+
+.doctor-info {
+  flex: 1;
+}
+
+.doctor-info h4 {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.specialty {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.doctor-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.doctor-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.availability {
+  font-size: 12px;
+  color: var(--routine-green);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.book-btn, .schedule-btn {
+  width: 100%;
+  padding: 8px;
+  background: var(--medical-blue);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.book-btn:hover, .schedule-btn:hover {
+  background: var(--teal-accent);
+  transform: translateY(-1px);
+}
+
+.hospital-card {
+  padding: 16px;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.hospital-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.hospital-header h4 {
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.department {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.hospital-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.capacity-bar {
+  height: 6px;
+  background: #E8E8E8;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 4px 0;
+}
+
+.capacity-fill {
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+.lab-card {
+  padding: 16px;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.lab-card h4 {
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.lab-tests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.test-badge {
+  background: #E3F2FD;
+  color: var(--medical-blue);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.lab-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.lab-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lab-cost {
+  color: var(--teal-accent);
+  font-weight: 600;
+}
+
+.action-plan {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border: 2px solid var(--routine-green);
+}
+
+.action-steps {
+  padding-left: 20px;
+  margin-top: 12px;
+}
+
+.action-steps li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}

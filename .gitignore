@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+*.log
+.env
+.DS_Store
+uploads/
+*.pyc
+__pycache__/
+.venv/
+venv/
+*.h5
+*.pkl
+.vscode/
+.idea/

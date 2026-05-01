@@ -1,0 +1,142 @@
+.digital-twin {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.patient-header {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.patient-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid var(--medical-blue);
+}
+
+.patient-info h4 {
+  font-size: 20px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.patient-id {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 8px;
+}
+
+.patient-stats {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.patient-stats span {
+  padding: 4px 8px;
+  background: var(--bg-primary);
+  border-radius: 6px;
+}
+
+.risk-indicator {
+  margin-top: 16px;
+}
+
+.risk-bar {
+  height: 8px;
+  background: #E8E8E8;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.risk-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--routine-green), var(--urgent-orange), var(--emergency-red));
+  transition: width 0.5s ease;
+}
+
+.risk-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.condition-item, .allergy-item, .medication-item {
+  padding: 12px;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.condition-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.condition-name, .allergy-name, .med-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.condition-date, .med-details {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 24px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-color);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -20px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px var(--border-color);
+}
+
+.timeline-dot.moderate {
+  background: var(--urgent-orange);
+}
+
+.timeline-dot.routine {
+  background: var(--routine-green);
+}
+
+.timeline-date {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.timeline-text {
+  font-size: 13px;
+  color: var(--text-primary);
+}

@@ -1,0 +1,41 @@
+{
+  "name": "healthai-pro",
+  "version": "2.0.0",
+  "description": "Unified Healthcare Intelligence Platform - Production Ready",
+  "scripts": {
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && pip install -r requirements.txt",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && uvicorn main:app --reload --port 8000",
+    "build": "cd frontend && npm run build",
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && pytest tests/ -v",
+    "deploy:aws": "sh scripts/deploy-aws.sh",
+    "deploy:gcp": "sh scripts/deploy-gcp.sh",
+    "backup": "sh scripts/backup.sh"
+  },
+  "keywords": [
+    "healthcare",
+    "AI",
+    "radiology",
+    "GraphRAG",
+    "TigerGraph",
+    "medical",
+    "diagnosis",
+    "machine-learning"
+  ],
+  "author": "HealthAI Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0",
+    "python": ">=3.10.0"
+  }
+}

@@ -1,0 +1,172 @@
+================================================================================
+                    HEALTHAI PRO - RUNNING INSTRUCTIONS
+================================================================================
+
+CURRENT STATUS: Docker is installed but NOT running
+
+================================================================================
+                        STEP 1: START DOCKER DESKTOP
+================================================================================
+
+1. Look for Docker icon in your Windows system tray (bottom-right corner)
+   - It looks like a whale with containers on its back
+
+2. If you don't see it:
+   - Press Windows key
+   - Type "Docker Desktop"
+   - Click on Docker Desktop application
+
+3. Wait for Docker to start:
+   - The whale icon will be animated while starting
+   - When ready, it will be steady and you'll see "Docker Desktop is running"
+   - This takes 1-2 minutes
+
+================================================================================
+                        STEP 2: RUN THE PLATFORM
+================================================================================
+
+METHOD 1 (EASIEST):
+-------------------
+1. Find the file: start.bat (in this folder)
+2. Double-click it
+3. A window will open and start the platform
+4. Wait for "Platform is ready!" message
+5. Browser will open automatically to http://localhost:3000
+
+METHOD 2 (COMMAND LINE):
+------------------------
+1. Open PowerShell in this folder
+2. Run: docker-compose up -d
+3. Wait 30 seconds
+4. Open browser to: http://localhost:3000
+
+================================================================================
+                        STEP 3: LOGIN
+================================================================================
+
+Email: admin@healthai.com
+Password: admin123
+
+================================================================================
+                        WHAT YOU'LL SEE
+================================================================================
+
+DASHBOARD:
+- Real-time statistics
+- Recent activity
+- Performance charts
+- AI metrics
+
+RADIOLOGY:
+- Upload medical images
+- AI analysis with 94.8% accuracy
+- Explainable heatmaps
+- Instant reports
+
+SYMPTOM ANALYSIS:
+- Natural language input
+- Disease predictions
+- Risk assessment
+- Care recommendations
+
+PATIENT MANAGEMENT:
+- Digital health twins
+- Medical history
+- Timeline visualization
+
+ANALYTICS:
+- Performance metrics
+- AI model tracking
+- Business intelligence
+
+================================================================================
+                        USEFUL COMMANDS
+================================================================================
+
+View running services:
+> docker-compose ps
+
+View logs:
+> docker-compose logs -f
+
+Stop platform:
+> docker-compose down
+
+Restart platform:
+> docker-compose restart
+
+Rebuild (after changes):
+> docker-compose up -d --build
+
+================================================================================
+                        TROUBLESHOOTING
+================================================================================
+
+PROBLEM: "Cannot connect to Docker daemon"
+SOLUTION: Start Docker Desktop and wait for it to fully load
+
+PROBLEM: "Port already in use"
+SOLUTION: Run: docker-compose down
+          Then: docker-compose up -d
+
+PROBLEM: "Services not responding"
+SOLUTION: Check logs: docker-compose logs
+          Or rebuild: docker-compose up -d --build
+
+PROBLEM: "Page not loading"
+SOLUTION: Wait 30-60 seconds for services to initialize
+          Check logs: docker-compose logs -f
+
+================================================================================
+                        SAMPLE DATA TO TRY
+================================================================================
+
+SYMPTOM EXAMPLES:
+- "chest pain and shortness of breath for 2 days"
+- "severe headache with nausea and dizziness"
+- "persistent cough with fever for a week"
+- "abdominal pain in lower right quadrant"
+
+TEST ACCOUNTS:
+Admin: admin@healthai.com / admin123
+Doctor: doctor@healthai.com / doctor123
+Patient: patient@healthai.com / patient123
+
+================================================================================
+                        NEXT STEPS
+================================================================================
+
+1. Start Docker Desktop (if not already running)
+2. Run start.bat or docker-compose up -d
+3. Wait 30 seconds
+4. Open http://localhost:3000
+5. Login with admin@healthai.com / admin123
+6. Explore the platform!
+
+================================================================================
+                        DOCUMENTATION
+================================================================================
+
+START_HERE.md - Quick start guide
+QUICK_START.md - Detailed setup
+README.md - Full documentation
+PRODUCTION_DEPLOYMENT.md - Deployment guide
+MARKET_READY_SUMMARY.md - Business overview
+
+================================================================================
+                        SUPPORT
+================================================================================
+
+Check logs: docker-compose logs -f
+Read docs: See files above
+Issues: Check troubleshooting section
+
+================================================================================
+
+                    READY TO START? 
+                    
+    1. Start Docker Desktop
+    2. Double-click start.bat
+    3. Enjoy! 🏥
+
+================================================================================

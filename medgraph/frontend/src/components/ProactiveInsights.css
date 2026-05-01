@@ -1,0 +1,86 @@
+.proactive-insights {
+  margin-top: 20px;
+}
+
+.insights-card {
+  background: linear-gradient(135deg, #FFF9E6 0%, #FFF3CD 100%);
+  border: 2px solid var(--monitor-yellow);
+}
+
+.insights-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.insight-item {
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.insight-header {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.insight-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.insight-title-section {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.insight-title-section h4 {
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.priority-badge {
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.priority-urgent {
+  background: #FADBD8;
+  color: var(--emergency-red);
+}
+
+.priority-high {
+  background: #FAE5D3;
+  color: var(--urgent-orange);
+}
+
+.priority-routine {
+  background: #D5F4E6;
+  color: var(--routine-green);
+}
+
+.insight-message {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-left: 48px;
+}
