@@ -1,40 +1,14 @@
-version: '3.8'
+"""
+This repository originally included the RIS AI platform compose configuration.
+The RIS AI platform has been removed from the active workspace. The
+unified-healthcare-platform is kept under `unified-healthcare-platform/`.
 
-services:
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - VITE_API_URL=http://localhost:5000
-    depends_on:
-      - backend
+To start the unified platform services, run from the repository root:
 
-  backend:
-    build: ./backend
-    ports:
-      - "5000:5000"
-    environment:
-      - PORT=5000
-      - MONGODB_URI=mongodb://mongo:27017/ris-ai
-      - AI_SERVICE_URL=http://ai-service:8000
-    depends_on:
-      - mongo
-      - ai-service
+    docker-compose -f unified-healthcare-platform/docker-compose.yml up -d
 
-  ai-service:
-    build: ./ai-service
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./ai-service/models:/app/models
+Or use the npm script:
 
-  mongo:
-    image: mongo:7.0
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
+    npm run start:unified
 
-volumes:
-  mongo-data:
+"""

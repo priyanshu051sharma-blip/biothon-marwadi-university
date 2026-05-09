@@ -3,18 +3,23 @@ Simplified Healthcare Platform Backend
 FastAPI server with mock data for demo
 """
 
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 from datetime import datetime
 import random
+import os
+import httpx
+from urllib.parse import quote
 
 app = FastAPI(
     title="HealthAI Pro API",
     version="2.0.0",
     description="Unified Healthcare Intelligence Platform"
 )
+
+RIS_API_URL = os.getenv("RIS_API_URL", "http://127.0.0.1:8010").rstrip("/")
 
 # CORS
 app.add_middleware(
@@ -120,6 +125,26 @@ async def analyze_radiology(file: UploadFile = File(...), language: str = "engli
     ]
     
     diseases = ["Pneumonia", "Tuberculosis", "Normal", "Bronchitis"]
+        heatmap_svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800' viewBox='0 0 1200 800'>
+    <defs>
+        <linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'>
+            <stop offset='0%' stop-color='#081A2D'/>
+            <stop offset='100%' stop-color='#0F3D5E'/>
+        </linearGradient>
+        <radialGradient id='hotspot' cx='52%' cy='40%' r='45%'>
+            <stop offset='0%' stop-color='#FFEB3B' stop-opacity='0.95'/>
+            <stop offset='42%' stop-color='#FF9800' stop-opacity='0.65'/>
+            <stop offset='100%' stop-color='#E53935' stop-opacity='0'/>
+        </radialGradient>
+    </defs>
+    <rect width='1200' height='800' fill='url(#bg)'/>
+    <rect x='70' y='70' width='1060' height='660' rx='28' fill='#FFFFFF' fill-opacity='0.08' stroke='#FFFFFF' stroke-opacity='0.2'/>
+    <ellipse cx='600' cy='340' rx='300' ry='220' fill='url(#hotspot)'/>
+    <circle cx='600' cy='340' r='160' fill='#FFEE58' fill-opacity='0.22'/>
+    <text x='80' y='760' fill='#EAF2F8' font-family='Arial, sans-serif' font-size='34' font-weight='700'>AI Radiology Heatmap Preview</text>
+    <text x='80' y='800' fill='#CFE2F3' font-family='Arial, sans-serif' font-size='22'>Demo overlay generated for {file.filename}</text>
+</svg>"""
+        heatmap_url = f"data:image/svg+xml;utf8,{quote(heatmap_svg)}"
     
     return {
         "report_id": f"R{random.randint(1000, 9999)}",
@@ -129,8 +154,64 @@ async def analyze_radiology(file: UploadFile = File(...), language: str = "engli
         "severity": random.choice(["mild", "moderate", "severe"]),
         "recommendation": "Immediate consultation with pulmonologist recommended",
         "language": language,
+                "heatmap_url": heatmap_url,
         "timestamp": datetime.now().isoformat()
     }
+
+
+@app.post("/api/radiology/ensemble-analyze")
+async def analyze_radiology_ensemble(
+    image: UploadFile = File(...),
+    scanType: str = Form("xray"),
+    authorization: Optional[str] = Header(default=None),
+):
+    """Proxy RIS ensemble inference endpoint for CT/X-ray model matrix outputs."""
+    scan_type = scanType.lower().strip()
+    if scan_type not in {"xray", "ct"}:
+        raise HTTPException(status_code=400, detail="scanType must be either 'xray' or 'ct'")
+
+    try:
+        image_bytes = await image.read()
+        if not image_bytes:
+            raise HTTPException(status_code=400, detail="Uploaded image is empty")
+
+        files = {
+            "image": (
+                image.filename or "scan.jpg",
+                image_bytes,
+                image.content_type or "application/octet-stream",
+            )
+        }
+        data = {"scanType": scan_type}
+        headers = {}
+        if authorization:
+            headers["Authorization"] = authorization
+
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            response = await client.post(
+                f"{RIS_API_URL}/api/analyze",
+                data=data,
+                files=files,
+                headers=headers,
+            )
+
+        if response.status_code >= 400:
+            detail = "RIS inference request failed"
+            try:
+                detail = response.json().get("detail", detail)
+            except Exception:
+                pass
+            raise HTTPException(status_code=response.status_code, detail=detail)
+
+        return response.json()
+    except httpx.RequestError:
+        raise HTTPException(
+            status_code=502,
+            detail=(
+                f"Cannot reach RIS inference service at {RIS_API_URL}. "
+                "Start RIS backend and set RIS_API_URL if needed."
+            ),
+        )
 
 @app.get("/api/patients")
 async def get_patients():

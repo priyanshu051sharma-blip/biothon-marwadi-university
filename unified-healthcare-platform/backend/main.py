@@ -4,13 +4,15 @@ FastAPI server with ML models, AI agents, and GraphRAG
 Enhanced with symptom questionnaire, disease prediction, doctor recommendation, and medicines
 """
 
-from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
+from fastapi import FastAPI, HTTPException, UploadFile, File, Depends, Form, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 import asyncio
+import os
 from datetime import datetime
+import httpx
 
 from agents.orchestrator import AgentOrchestrator
 from agents.symptom_questionnaire_agent import SymptomQuestionnaireAgent
@@ -43,6 +45,8 @@ app = FastAPI(
     version="2.0.0",
     description="Unified Healthcare Intelligence Platform"
 )
+
+RIS_API_URL = os.getenv("RIS_API_URL", "http://127.0.0.1:8010").rstrip("/")
 
 # CORS
 app.add_middleware(
@@ -245,6 +249,61 @@ async def analyze_radiology(
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/radiology/ensemble-analyze")
+async def analyze_radiology_ensemble(
+    image: UploadFile = File(...),
+    scanType: str = Form("xray"),
+    authorization: Optional[str] = Header(default=None),
+):
+    """Proxy full RIS ensemble inference (CT/X-ray models + heatmaps) for portal integration."""
+    scan_type = scanType.lower().strip()
+    if scan_type not in {"xray", "ct"}:
+        raise HTTPException(status_code=400, detail="scanType must be either 'xray' or 'ct'")
+
+    try:
+        image_bytes = await image.read()
+        if not image_bytes:
+            raise HTTPException(status_code=400, detail="Uploaded image is empty")
+
+        files = {
+            "image": (
+                image.filename or "scan.jpg",
+                image_bytes,
+                image.content_type or "application/octet-stream",
+            )
+        }
+        data = {"scanType": scan_type}
+        headers = {}
+        if authorization:
+            headers["Authorization"] = authorization
+
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            response = await client.post(
+                f"{RIS_API_URL}/api/analyze",
+                data=data,
+                files=files,
+                headers=headers,
+            )
+
+        if response.status_code >= 400:
+            detail = "RIS inference request failed"
+            try:
+                detail = response.json().get("detail", detail)
+            except Exception:
+                pass
+            raise HTTPException(status_code=response.status_code, detail=detail)
+
+        return response.json()
+    except httpx.RequestError:
+        raise HTTPException(
+            status_code=502,
+            detail=(
+                f"Cannot reach RIS inference service at {RIS_API_URL}. "
+                "Start RIS backend and set RIS_API_URL if needed."
+            ),
+        )
 
 @app.post("/api/symptoms/analyze")
 async def analyze_symptoms(request: SymptomAnalysisRequest):

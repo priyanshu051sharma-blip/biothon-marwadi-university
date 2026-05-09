@@ -1,13 +1,13 @@
 {
-  "name": "ris-ai-platform",
+  "name": "healthcare-mvp",
   "version": "1.0.0",
-  "description": "AI-Powered Multilingual Radiology Information System",
+  "description": "Healthcare MVP workspace — unified platform retained",
   "scripts": {
-    "dev": "cd frontend && npm run dev",
-    "backend": "cd backend && npm start",
-    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install"
+    "start:unified": "cd unified-healthcare-platform && docker-compose up -d",
+    "frontend:unified": "cd unified-healthcare-platform/frontend && npm install && npm run dev",
+    "backend:unified": "cd unified-healthcare-platform/backend && python -m pip install -r requirements.txt && python -m uvicorn main:app --reload --port 8000"
   },
-  "keywords": ["radiology", "AI", "healthcare", "multilingual"],
+  "keywords": ["healthcare", "unified", "platform"],
   "author": "",
   "license": "MIT"
 }
