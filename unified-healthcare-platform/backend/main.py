@@ -164,7 +164,7 @@ async def startup_event():
             await db.connect()
         except:
             pass
-    print("✅ All available services initialized")
+    print("[OK] All available services initialized")
 
 @app.get("/")
 def root():
