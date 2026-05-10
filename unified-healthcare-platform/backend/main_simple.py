@@ -125,7 +125,8 @@ async def analyze_radiology(file: UploadFile = File(...), language: str = "engli
     ]
     
     diseases = ["Pneumonia", "Tuberculosis", "Normal", "Bronchitis"]
-        heatmap_svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800' viewBox='0 0 1200 800'>
+    
+    heatmap_svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800' viewBox='0 0 1200 800'>
     <defs>
         <linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'>
             <stop offset='0%' stop-color='#081A2D'/>
@@ -144,7 +145,7 @@ async def analyze_radiology(file: UploadFile = File(...), language: str = "engli
     <text x='80' y='760' fill='#EAF2F8' font-family='Arial, sans-serif' font-size='34' font-weight='700'>AI Radiology Heatmap Preview</text>
     <text x='80' y='800' fill='#CFE2F3' font-family='Arial, sans-serif' font-size='22'>Demo overlay generated for {file.filename}</text>
 </svg>"""
-        heatmap_url = f"data:image/svg+xml;utf8,{quote(heatmap_svg)}"
+    heatmap_url = f"data:image/svg+xml;utf8,{quote(heatmap_svg)}"
     
     return {
         "report_id": f"R{random.randint(1000, 9999)}",
@@ -154,7 +155,7 @@ async def analyze_radiology(file: UploadFile = File(...), language: str = "engli
         "severity": random.choice(["mild", "moderate", "severe"]),
         "recommendation": "Immediate consultation with pulmonologist recommended",
         "language": language,
-                "heatmap_url": heatmap_url,
+        "heatmap_url": heatmap_url,
         "timestamp": datetime.now().isoformat()
     }
 
