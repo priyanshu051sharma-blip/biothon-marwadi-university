@@ -2,10 +2,11 @@
   "version": 2,
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
-  "public": false,
+  "framework": "vite",
   "env": {
     "VITE_API_URL": "@VITE_API_URL"
   },
+  "envPrefix": "VITE_",
   "rewrites": [
     {
       "source": "/(.*)",
@@ -13,6 +14,27 @@
     }
   ],
   "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
     {
       "source": "/assets/(.*)",
       "headers": [
@@ -23,11 +45,20 @@
       ]
     },
     {
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "cache-control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/",
       "headers": [
         {
           "key": "cache-control",
-          "value": "no-cache"
+          "value": "public, max-age=0, must-revalidate"
         }
       ]
     }
