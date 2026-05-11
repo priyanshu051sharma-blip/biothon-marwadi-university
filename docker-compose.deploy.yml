@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # -------------------------------------
+  # 1. Databases
+  # -------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=healthai
+      - POSTGRES_USER=healthai
+      - POSTGRES_PASSWORD=healthai123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U healthai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo:
+    image: mongo:7.0
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------
+  # 2. RIS Backend (AI Radiology)
+  # -------------------------------------
+  ris-backend:
+    build:
+      context: ./RIS/backend
+      dockerfile: Dockerfile
+    # The RIS Dockerfile uses port 7860 by default
+    expose:
+      - "7860"
+    volumes:
+      - ./RIS/backend/models:/app/models
+    # No ports mapped to host by default to keep it internal, 
+    # but you can add - "8010:7860" if you want external access.
+
+  # -------------------------------------
+  # 3. Unified Healthcare Platform Backend
+  # -------------------------------------
+  backend:
+    build:
+      context: ./unified-healthcare-platform/backend
+      dockerfile: Dockerfile
+    environment:
+      # Crucial: This links the Unified Backend to the RIS Backend container
+      - RIS_API_URL=http://ris-backend:7860
+      - DATABASE_URL=postgresql://healthai:healthai123@postgres:5432/healthai
+      - MONGO_URL=mongodb://mongo:27017
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    expose:
+      - "8000"
+    # Map to host port 8000 if you want direct API access
+    ports:
+      - "8000:8000"
+
+  # -------------------------------------
+  # 4. Frontend (React via Nginx)
+  # -------------------------------------
+  frontend:
+    build:
+      context: ./unified-healthcare-platform/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:
