@@ -53,6 +53,33 @@ function Dashboard() {
     { metric: 'Reliability', value: 99.1, target: 99 }
   ]
 
+  const handleGenerateReport = () => {
+    const reportContent = `Healthcare MVP - System Overview Report
+Generated on: ${new Date().toLocaleString()}
+
+Overall Statistics:
+-------------------
+Total Patients: ${stats.totalPatients}
+Active Scans: ${stats.activeScans}
+AI Analyses: ${stats.aiAnalyses}
+Pending Reports: ${stats.pendingReports}
+
+AI Performance Metrics:
+-----------------------
+Average Response Time: ${stats.avgResponseTime}
+Overall AI Accuracy: ${stats.aiAccuracy}%
+`;
+    const blob = new Blob([reportContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Healthcare_Report_${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="dashboard-page">
       <div className="page-header">
@@ -65,7 +92,7 @@ function Dashboard() {
             <Clock size={18} />
             Last 7 days
           </button>
-          <button className="btn-primary">
+          <button className="btn-primary" onClick={handleGenerateReport}>
             Generate Report
           </button>
         </div>
