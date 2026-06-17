@@ -373,3 +373,14 @@
     padding-right: 24px;
   }
 }
+
+.portal-switch-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px dashed rgba(255, 255, 255, 0.15) !important;
+  margin-bottom: 8px;
+}
+
+.portal-switch-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}

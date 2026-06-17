@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Users, Search, Plus, Eye, Edit, FileText, Calendar, Phone, Mail, MapPin, Activity, AlertCircle } from 'lucide-react'
 
 function PatientManagement() {
@@ -6,137 +6,212 @@ function PatientManagement() {
   const [selectedPatient, setSelectedPatient] = useState(null)
   const [showAddModal, setShowAddModal] = useState(false)
 
-  const patients = [
-    {
-      id: 'P001',
-      name: 'John Anderson',
-      age: 45,
-      gender: 'Male',
-      bloodGroup: 'O+',
-      phone: '+91 98765 43210',
-      email: 'john.anderson@email.com',
-      address: '123 Main Street, Downtown',
-      lastVisit: '2024-01-10',
-      nextAppointment: '2024-01-25',
-      status: 'active',
-      conditions: ['Hypertension', 'Type 2 Diabetes'],
-      medications: ['Metformin 500mg', 'Lisinopril 10mg'],
-      recentScans: [
-        { date: '2024-01-10', type: 'Chest X-Ray', result: 'Normal' },
-        { date: '2023-12-15', type: 'Blood Test', result: 'HbA1c: 6.8%' }
-      ],
-      vitals: {
-        bp: '130/85',
-        heartRate: 78,
-        temperature: 98.6,
-        weight: 82,
-        height: 175
-      }
-    },
-    {
-      id: 'P002',
-      name: 'Sarah Miller',
-      age: 32,
-      gender: 'Female',
-      bloodGroup: 'A+',
-      phone: '+91 98765 43211',
-      email: 'sarah.miller@email.com',
-      address: '456 Park Avenue, North District',
-      lastVisit: '2024-01-12',
-      nextAppointment: '2024-02-05',
-      status: 'active',
-      conditions: ['Asthma'],
-      medications: ['Ventolin Inhaler', 'Montelukast 10mg'],
-      recentScans: [
-        { date: '2024-01-12', type: 'Pulmonary Function Test', result: 'Mild Obstruction' },
-        { date: '2023-11-20', type: 'Chest X-Ray', result: 'Clear' }
-      ],
-      vitals: {
-        bp: '118/76',
-        heartRate: 72,
-        temperature: 98.4,
-        weight: 65,
-        height: 165
-      }
-    },
-    {
-      id: 'P003',
-      name: 'Michael Chen',
-      age: 58,
-      gender: 'Male',
-      bloodGroup: 'B+',
-      phone: '+91 98765 43212',
-      email: 'michael.chen@email.com',
-      address: '789 Oak Street, East Side',
-      lastVisit: '2024-01-08',
-      nextAppointment: '2024-01-20',
-      status: 'critical',
-      conditions: ['Coronary Artery Disease', 'Hyperlipidemia'],
-      medications: ['Atorvastatin 40mg', 'Aspirin 75mg', 'Metoprolol 50mg'],
-      recentScans: [
-        { date: '2024-01-08', type: 'ECG', result: 'Abnormal - ST Depression' },
-        { date: '2024-01-05', type: 'Lipid Profile', result: 'LDL: 145 mg/dL' }
-      ],
-      vitals: {
-        bp: '145/92',
-        heartRate: 88,
-        temperature: 98.8,
-        weight: 90,
-        height: 178
-      }
-    },
-    {
-      id: 'P004',
-      name: 'Emma Wilson',
-      age: 28,
-      gender: 'Female',
-      bloodGroup: 'AB+',
-      phone: '+91 98765 43213',
-      email: 'emma.wilson@email.com',
-      address: '321 Elm Street, West End',
-      lastVisit: '2024-01-14',
-      nextAppointment: '2024-03-10',
-      status: 'stable',
-      conditions: ['Migraine'],
-      medications: ['Sumatriptan 50mg PRN'],
-      recentScans: [
-        { date: '2024-01-14', type: 'MRI Brain', result: 'No Abnormalities' }
-      ],
-      vitals: {
-        bp: '115/72',
-        heartRate: 68,
-        temperature: 98.2,
-        weight: 58,
-        height: 162
-      }
-    },
-    {
-      id: 'P005',
-      name: 'David Kumar',
-      age: 51,
-      gender: 'Male',
-      bloodGroup: 'O-',
-      phone: '+91 98765 43214',
-      email: 'david.kumar@email.com',
-      address: '555 Maple Drive, South Quarter',
-      lastVisit: '2024-01-11',
-      nextAppointment: '2024-01-28',
-      status: 'active',
-      conditions: ['Chronic Kidney Disease Stage 3'],
-      medications: ['Losartan 50mg', 'Furosemide 40mg'],
-      recentScans: [
-        { date: '2024-01-11', type: 'Kidney Function Test', result: 'eGFR: 52 mL/min' },
-        { date: '2023-12-28', type: 'Ultrasound Kidneys', result: 'Bilateral Cortical Thinning' }
-      ],
-      vitals: {
-        bp: '138/88',
-        heartRate: 76,
-        temperature: 98.5,
-        weight: 78,
-        height: 172
+  const [patients, setPatients] = useState(() => {
+    const saved = localStorage.getItem('healthai-patients')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch (e) {
+        console.error('Failed to parse saved patients:', e)
       }
     }
-  ]
+    return [
+      {
+        id: 'P001',
+        name: 'John Anderson',
+        age: 45,
+        gender: 'Male',
+        bloodGroup: 'O+',
+        phone: '+91 98765 43210',
+        email: 'john.anderson@email.com',
+        address: '123 Main Street, Downtown',
+        lastVisit: '2024-01-10',
+        nextAppointment: '2024-01-25',
+        status: 'active',
+        conditions: ['Hypertension', 'Type 2 Diabetes'],
+        medications: ['Metformin 500mg', 'Lisinopril 10mg'],
+        recentScans: [
+          { date: '2024-01-10', type: 'Chest X-Ray', result: 'Normal' },
+          { date: '2023-12-15', type: 'Blood Test', result: 'HbA1c: 6.8%' }
+        ],
+        vitals: {
+          bp: '130/85',
+          heartRate: 78,
+          temperature: 98.6,
+          weight: 82,
+          height: 175
+        }
+      },
+      {
+        id: 'P002',
+        name: 'Sarah Miller',
+        age: 32,
+        gender: 'Female',
+        bloodGroup: 'A+',
+        phone: '+91 98765 43211',
+        email: 'sarah.miller@email.com',
+        address: '456 Park Avenue, North District',
+        lastVisit: '2024-01-12',
+        nextAppointment: '2024-02-05',
+        status: 'active',
+        conditions: ['Asthma'],
+        medications: ['Ventolin Inhaler', 'Montelukast 10mg'],
+        recentScans: [
+          { date: '2024-01-12', type: 'Pulmonary Function Test', result: 'Mild Obstruction' },
+          { date: '2023-11-20', type: 'Chest X-Ray', result: 'Clear' }
+        ],
+        vitals: {
+          bp: '118/76',
+          heartRate: 72,
+          temperature: 98.4,
+          weight: 65,
+          height: 165
+        }
+      },
+      {
+        id: 'P003',
+        name: 'Michael Chen',
+        age: 58,
+        gender: 'Male',
+        bloodGroup: 'B+',
+        phone: '+91 98765 43212',
+        email: 'michael.chen@email.com',
+        address: '789 Oak Street, East Side',
+        lastVisit: '2024-01-08',
+        nextAppointment: '2024-01-20',
+        status: 'critical',
+        conditions: ['Coronary Artery Disease', 'Hyperlipidemia'],
+        medications: ['Atorvastatin 40mg', 'Aspirin 75mg', 'Metoprolol 50mg'],
+        recentScans: [
+          { date: '2024-01-08', type: 'ECG', result: 'Abnormal - ST Depression' },
+          { date: '2024-01-05', type: 'Lipid Profile', result: 'LDL: 145 mg/dL' }
+        ],
+        vitals: {
+          bp: '145/92',
+          heartRate: 88,
+          temperature: 98.8,
+          weight: 90,
+          height: 178
+        }
+      },
+      {
+        id: 'P004',
+        name: 'Emma Wilson',
+        age: 28,
+        gender: 'Female',
+        bloodGroup: 'AB+',
+        phone: '+91 98765 43213',
+        email: 'emma.wilson@email.com',
+        address: '321 Elm Street, West End',
+        lastVisit: '2024-01-14',
+        nextAppointment: '2024-03-10',
+        status: 'stable',
+        conditions: ['Migraine'],
+        medications: ['Sumatriptan 50mg PRN'],
+        recentScans: [
+          { date: '2024-01-14', type: 'MRI Brain', result: 'No Abnormalities' }
+        ],
+        vitals: {
+          bp: '115/72',
+          heartRate: 68,
+          temperature: 98.2,
+          weight: 58,
+          height: 162
+        }
+      },
+      {
+        id: 'P005',
+        name: 'David Kumar',
+        age: 51,
+        gender: 'Male',
+        bloodGroup: 'O-',
+        phone: '+91 98765 43214',
+        email: 'david.kumar@email.com',
+        address: '555 Maple Drive, South Quarter',
+        lastVisit: '2024-01-11',
+        nextAppointment: '2024-01-28',
+        status: 'active',
+        conditions: ['Chronic Kidney Disease Stage 3'],
+        medications: ['Losartan 50mg', 'Furosemide 40mg'],
+        recentScans: [
+          { date: '2024-01-11', type: 'Kidney Function Test', result: 'eGFR: 52 mL/min' },
+          { date: '2023-12-28', type: 'Ultrasound Kidneys', result: 'Bilateral Cortical Thinning' }
+        ],
+        vitals: {
+          bp: '138/88',
+          heartRate: 76,
+          temperature: 98.5,
+          weight: 78,
+          height: 172
+        }
+      }
+    ]
+  })
+
+  useEffect(() => {
+    localStorage.setItem('healthai-patients', JSON.stringify(patients))
+  }, [patients])
+
+  const [formPatient, setFormPatient] = useState({
+    name: '',
+    age: '',
+    gender: 'Male',
+    bloodGroup: 'O+',
+    phone: '',
+    email: '',
+    address: '',
+    conditions: '',
+    medications: ''
+  })
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target
+    setFormPatient(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleAddPatientSubmit = (e) => {
+    e.preventDefault()
+    if (!formPatient.name.trim()) return
+
+    const newId = `P00${patients.length + 1}`
+    const newPatient = {
+      id: newId,
+      name: formPatient.name,
+      age: Number(formPatient.age) || 30,
+      gender: formPatient.gender,
+      bloodGroup: formPatient.bloodGroup,
+      phone: formPatient.phone || '+91 98765 43210',
+      email: formPatient.email || `${formPatient.name.toLowerCase().replace(/\s+/g, '')}@email.com`,
+      address: formPatient.address || '123 Main Street',
+      lastVisit: new Date().toISOString().split('T')[0],
+      nextAppointment: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      status: 'active',
+      conditions: formPatient.conditions ? formPatient.conditions.split(',').map(c => c.trim()) : [],
+      medications: formPatient.medications ? formPatient.medications.split(',').map(m => m.trim()) : [],
+      recentScans: [],
+      vitals: {
+        bp: '120/80',
+        heartRate: 72,
+        temperature: 98.6,
+        weight: 70,
+        height: 170
+      }
+    }
+
+    setPatients(prev => [newPatient, ...prev])
+    setShowAddModal(false)
+    setFormPatient({
+      name: '',
+      age: '',
+      gender: 'Male',
+      bloodGroup: 'O+',
+      phone: '',
+      email: '',
+      address: '',
+      conditions: '',
+      medications: ''
+    })
+  }
 
   const getStatusColor = (status) => {
     switch(status) {
@@ -457,6 +532,244 @@ function PatientManagement() {
           </div>
         )}
       </div>
+
+      {/* Add Patient Modal */}
+      {showAddModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.6)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          animation: 'fadeIn 0.2s ease-out'
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '20px',
+            padding: '36px',
+            maxWidth: '650px',
+            width: '90%',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            border: '1px solid rgba(226, 232, 240, 0.8)'
+          }}>
+            <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#0A2540', marginBottom: '24px' }}>
+              Add New Patient Record
+            </h3>
+
+            <form onSubmit={handleAddPatientSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#2C3E50', marginBottom: '6px' }}>Full Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={formPatient.name}
+                  onChange={handleFormChange}
+                  placeholder="E.g., John Anderson"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E1E8ED',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#2C3E50', marginBottom: '6px' }}>Age</label>
+                <input
+                  type="number"
+                  name="age"
+                  required
+                  value={formPatient.age}
+                  onChange={handleFormChange}
+                  placeholder="E.g., 45"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E1E8ED',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#2C3E50', marginBottom: '6px' }}>Gender</label>
+                <select
+                  name="gender"
+                  value={formPatient.gender}
+                  onChange={handleFormChange}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E1E8ED',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    background: 'white'
+                  }}
+                >
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#2C3E50', marginBottom: '6px' }}>Blood Group</label>
+                <select
+                  name="bloodGroup"
+                  value={formPatient.bloodGroup}
+                  onChange={handleFormChange}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E1E8ED',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    background: 'white'
+                  }}
+                >
+                  {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => (
+                    <option key={bg} value={bg}>{bg}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#2C3E50', marginBottom: '6px' }}>Phone Number</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formPatient.phone}
+                  onChange={handleFormChange}
+                  placeholder="E.g., +91 98765 43210"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E1E8ED',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                />
+              </div>
+
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#2C3E50', marginBottom: '6px' }}>Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formPatient.email}
+                  onChange={handleFormChange}
+                  placeholder="E.g., john@email.com"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E1E8ED',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                />
+              </div>
+
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#2C3E50', marginBottom: '6px' }}>Home Address</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formPatient.address}
+                  onChange={handleFormChange}
+                  placeholder="E.g., 123 Main Street, Downtown"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E1E8ED',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                />
+              </div>
+
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#2C3E50', marginBottom: '6px' }}>Medical Conditions (Comma separated)</label>
+                <input
+                  type="text"
+                  name="conditions"
+                  value={formPatient.conditions}
+                  onChange={handleFormChange}
+                  placeholder="E.g., Hypertension, Type 2 Diabetes"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E1E8ED',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                />
+              </div>
+
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#2C3E50', marginBottom: '6px' }}>Current Medications (Comma separated)</label>
+                <input
+                  type="text"
+                  name="medications"
+                  value={formPatient.medications}
+                  onChange={handleFormChange}
+                  placeholder="E.g., Metformin 500mg, Lisinopril 10mg"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E1E8ED',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', gridColumn: '1 / -1', marginTop: '24px' }}>
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    background: 'linear-gradient(135deg, #1B4F72, #2E86AB)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Create Record
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  style={{
+                    padding: '14px 24px',
+                    background: '#F1F5F9',
+                    color: '#475569',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: '10px',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

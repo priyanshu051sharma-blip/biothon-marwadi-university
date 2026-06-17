@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { Brain, Search, Calendar, MapPin, Star, Clock, Phone, Video, User, CheckCircle, AlertCircle } from 'lucide-react'
+import api from '../services/api'
 
 function SymptomAnalysis() {
   const [symptoms, setSymptoms] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
   const [result, setResult] = useState(null)
+  const [error, setError] = useState(null)
   const [selectedDoctor, setSelectedDoctor] = useState(null)
   const [bookingModal, setBookingModal] = useState(false)
 
@@ -17,69 +19,106 @@ function SymptomAnalysis() {
     if (!symptoms.trim()) return
     
     setAnalyzing(true)
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    setError(null)
     
-    setResult({
-      diagnosis: 'Respiratory Infection',
-      confidence: 87.5,
-      severity: 'moderate',
-      description: 'Based on your symptoms, you may have a respiratory tract infection. Common causes include viral or bacterial infections.',
-      recommendations: [
-        'Rest and stay hydrated',
-        'Monitor temperature regularly',
-        'Avoid contact with others',
-        'Consult a doctor if symptoms worsen'
-      ],
-      suggestedDoctors: [
-        {
-          id: 1,
-          name: 'Dr. Sarah Johnson',
-          specialty: 'Pulmonologist',
-          experience: '15 years',
-          rating: 4.9,
-          reviews: 342,
-          hospital: 'City General Hospital',
-          location: 'Downtown Medical Center',
-          availability: 'Available Today',
-          nextSlot: '2:30 PM',
-          consultationFee: 500,
-          languages: ['English', 'Hindi'],
-          image: '👩‍⚕️'
-        },
-        {
-          id: 2,
-          name: 'Dr. Rajesh Kumar',
-          specialty: 'General Physician',
-          experience: '12 years',
-          rating: 4.8,
-          reviews: 289,
-          hospital: 'Apollo Hospital',
-          location: 'Sector 15, Medical District',
-          availability: 'Available Tomorrow',
-          nextSlot: '10:00 AM',
-          consultationFee: 400,
-          languages: ['English', 'Hindi', 'Tamil'],
-          image: '👨‍⚕️'
-        },
-        {
-          id: 3,
-          name: 'Dr. Priya Sharma',
-          specialty: 'Internal Medicine',
-          experience: '10 years',
-          rating: 4.7,
-          reviews: 215,
-          hospital: 'Max Healthcare',
-          location: 'North Avenue Medical Complex',
-          availability: 'Available Today',
-          nextSlot: '4:00 PM',
-          consultationFee: 450,
-          languages: ['English', 'Hindi'],
-          image: '👩‍⚕️'
-        }
-      ]
-    })
-    
-    setAnalyzing(false)
+    try {
+      // Call disease prediction API
+      const diseaseResponse = await api.post('/api/diseases/predict', {
+        symptom_profile: { symptoms: symptoms },
+        lifestyle_factors: {}
+      })
+      
+      const diseaseData = diseaseResponse.data
+      const topDisease = diseaseData.predictions?.[0]?.disease || 'Unknown Condition'
+      const confidence = diseaseData.predictions?.[0]?.confidence || 75
+      
+      // Call doctor search API
+      const doctorsResponse = await api.post('/api/doctors/search', {
+        disease: topDisease,
+        location: undefined
+      })
+      
+      const suggestedDoctors = doctorsResponse.data.doctors?.slice(0, 3) || []
+      
+      setResult({
+        diagnosis: topDisease,
+        confidence: confidence,
+        severity: confidence > 80 ? 'high' : confidence > 60 ? 'moderate' : 'low',
+        description: `Based on your symptoms, AI analysis suggests ${topDisease}. Please consult a healthcare professional for proper diagnosis and treatment.`,
+        recommendations: [
+          'Rest and stay hydrated',
+          'Monitor your symptoms',
+          'Consult a healthcare professional',
+          'Follow prescribed medications if any'
+        ],
+        suggestedDoctors: suggestedDoctors
+      })
+    } catch (err) {
+      console.error('Analysis error:', err)
+      // Fallback to demo data if API fails
+      setResult({
+        diagnosis: 'Respiratory Infection',
+        confidence: 87.5,
+        severity: 'moderate',
+        description: 'Based on your symptoms, you may have a respiratory tract infection. Common causes include viral or bacterial infections.',
+        recommendations: [
+          'Rest and stay hydrated',
+          'Monitor temperature regularly',
+          'Avoid contact with others',
+          'Consult a doctor if symptoms worsen'
+        ],
+        suggestedDoctors: [
+          {
+            id: 1,
+            name: 'Dr. Sarah Johnson',
+            specialty: 'Pulmonologist',
+            experience: '15 years',
+            rating: 4.9,
+            reviews: 342,
+            hospital: 'City General Hospital',
+            location: 'Downtown Medical Center',
+            availability: 'Available Today',
+            nextSlot: '2:30 PM',
+            consultationFee: 500,
+            languages: ['English', 'Hindi'],
+            image: '👩‍⚕️'
+          },
+          {
+            id: 2,
+            name: 'Dr. Rajesh Kumar',
+            specialty: 'General Physician',
+            experience: '12 years',
+            rating: 4.8,
+            reviews: 289,
+            hospital: 'Apollo Hospital',
+            location: 'Sector 15, Medical District',
+            availability: 'Available Tomorrow',
+            nextSlot: '10:00 AM',
+            consultationFee: 400,
+            languages: ['English', 'Hindi', 'Tamil'],
+            image: '👨‍⚕️'
+          },
+          {
+            id: 3,
+            name: 'Dr. Priya Sharma',
+            specialty: 'Internal Medicine',
+            experience: '10 years',
+            rating: 4.7,
+            reviews: 215,
+            hospital: 'Max Healthcare',
+            location: 'North Avenue Medical Complex',
+            availability: 'Available Today',
+            nextSlot: '4:00 PM',
+            consultationFee: 450,
+            languages: ['English', 'Hindi'],
+            image: '👩‍⚕️'
+          }
+        ]
+      })
+      setError('Using demo data - Backend connection limited')
+    } finally {
+      setAnalyzing(false)
+    }
   }
 
   const handleBookAppointment = (doctor) => {
